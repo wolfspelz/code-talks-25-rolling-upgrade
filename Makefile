@@ -23,6 +23,11 @@ rolling-upgrade:
 
 # ------------------- Testing ------------------
 
+run-single-node:
+	make node
+	make data
+	docker compose up --remove-orphans mongodb node1
+
 run-cmdline-node:
 	make data
 	(cd Node && DATA_FOLDER=./data dotnet run)
