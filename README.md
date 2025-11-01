@@ -15,4 +15,5 @@ Terminal 2:
 make node
 make rolling-upgrade
 ```
- 
+
+ Swagger: http://localhost:5000/swagger
