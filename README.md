@@ -6,9 +6,16 @@ Terminal 1:
 ```
 make run
 ```
-Broẃser: http://localhost:5000
 
-Change Logic/Field.cs: _color
+Browser
+- http://localhost:5000
+- get the grid
+- select fields
+- activate auto-refresh
+
+Change the business logic to show a changed implementation
+- in Logic/Field.cs
+- change _color value 
 
 Terminal 2:
 ```
@@ -16,4 +23,4 @@ make node
 make rolling-upgrade
 ```
 
- Swagger: http://localhost:5000/swagger
+Also Swagger: http://localhost:5000/swagger
