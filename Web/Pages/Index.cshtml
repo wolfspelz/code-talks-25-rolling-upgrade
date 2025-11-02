@@ -30,12 +30,12 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="gridNx" class="form-label">Rows:</label>
-                            <input type="number" class="form-control" id="gridNx" value="8">
+                            <label for="gridNy" class="form-label">Rows:</label>
+                            <input type="number" class="form-control" id="gridNy" value="8">
                         </div>
                         <div class="col-6">
-                            <label for="gridNy" class="form-label">Columns:</label>
-                            <input type="number" class="form-control" id="gridNy" value="18">
+                            <label for="gridNx" class="form-label">Columns:</label>
+                            <input type="number" class="form-control" id="gridNx" value="18">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -106,13 +106,60 @@
 
             axios.get(`/api/grid/${key}?nx=${nx}&ny=${ny}`)
                 .then(response => {
-                    const gridHtml = response.data.map((row, x) =>
-                        '<div>' + row.map((cell, y) => `<span class="badge my-field my-field-selected-${cell.selected}" style="background-color: ${cell.color};" onclick="toggleFieldSelection('${key}', ${x}, ${y}, ${cell.selected})">${cell.count}</span>`).join('') + '</div>'
-                    ).join('');
-                    document.getElementById('grid-result').innerHTML =
-                        `<div class="alert alert-success">${gridHtml}</div>`;
+                    const gridDimensions = getGridDimensions();
+                    const dimensionsChanged = gridDimensions.rows !== response.data.length || gridDimensions.columns !== response.data[0].length;
+                    if (dimensionsChanged) {
+                        // Rebuild the grid HTML if dimensions have changed
+                        const gridHtml = response.data.map((row, y) => ''
+                            + '<div>'
+                            + row.map((cell, x) =>
+                                `<span id="iField-${x}-${y}" class="badge my-field my-field-selected-${cell.selected}" data-selected="${cell.selected}" style="background-color: ${cell.color};" onclick="toggleFieldSelection('${key}', ${x}, ${y}, this.dataset.selected === 'true')">${cell.count}</span>`
+                            ).join('')
+                            + '</div>'
+                        ).join('');
+                        document.getElementById('grid-result').innerHTML = `<div class="alert alert-success">${gridHtml}</div>`;
+                    } else {
+                        // Update only the cell contents without rebuilding the entire grid
+                        response.data.forEach((row, y) => {
+                            row.forEach((cell, x) => {
+                                const cellElement = document.getElementById(`iField-${x}-${y}`);
+                                if (cellElement) {
+                                    cellElement.className = `badge my-field my-field-selected-${cell.selected}`;
+                                    cellElement.dataset.selected = `${cell.selected}`;
+                                    cellElement.style.backgroundColor = cell.color;
+                                    cellElement.innerText = cell.count;
+                                }
+                            });
+                        });
+                    }
                 })
                 .catch(error => showError('grid-result', error));
+        }
+
+        function getGridDimensions() {
+            const gridContainer = document.getElementById('grid-result');
+            if (!gridContainer) {
+                return { rows: 0, columns: 0 };
+            }
+
+            // Find all row divs (direct children of the grid container's alert div)
+            const alertDiv = gridContainer.querySelector('.alert');
+            if (!alertDiv) {
+                return { rows: 0, columns: 0 };
+            }
+
+            const rowDivs = alertDiv.querySelectorAll(':scope > div');
+            const rows = rowDivs.length;
+
+            // Get columns from the first row
+            let columns = 0;
+            if (rows > 0) {
+                const firstRow = rowDivs[0];
+                const cells = firstRow.querySelectorAll('.my-field');
+                columns = cells.length;
+            }
+
+            return { rows, columns };
         }
 
         function toggleFieldSelection(gridKey, x, y, currentValue) {
@@ -125,7 +172,7 @@
                 }
             })
                 .then(response => {
-                    console.log(`Field ${fieldKey} selection set to: ${newValue}`);
+                    @* console.log(`Field ${fieldKey} selection set to: ${newValue}`); *@
                     // Refresh the grid to show the updated selection state
                     getGrid();
                 })
@@ -133,17 +180,6 @@
                     console.error(`Error toggling selection for field ${fieldKey}:`, error);
                     showError('grid-result', error);
                 });
-        }
-
-        // Field functions
-        function getField() {
-            const key = document.getElementById('fieldKey').value;
-            axios.get(`/api/field/${key}`)
-                .then(response => {
-                    document.getElementById('field-result').innerHTML =
-                        `<div class="alert alert-success">Field value: <strong>${response.data}</strong></div>`;
-                })
-                .catch(error => showError('field-result', error));
         }
 
         // Error handling
