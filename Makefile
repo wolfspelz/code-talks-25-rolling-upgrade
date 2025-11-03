@@ -23,6 +23,12 @@ rolling-upgrade:
 
 # ------------------- Testing ------------------
 
+clean-data:
+	make empty-data
+
+reset-data:
+	make empty-data
+
 run-single-node:
 	make node
 	make data
