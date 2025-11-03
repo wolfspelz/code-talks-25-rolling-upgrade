@@ -1,4 +1,4 @@
-.PHONY: data empty-data
+.PHONY: data node web run rolling-upgrade clean-data reset-data run-single-node run-cmdline-node run-docker-node
 
 data:
 	if [ ! -d "./Node/data" ]; then mkdir -p ./Node/data; fi
