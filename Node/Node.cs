@@ -8,20 +8,16 @@ using Orleans.Providers.MongoDB.Configuration;
 using My.Logic; // This ensures the grains assembly is loaded
 using My.StorageProviders;
 
-string redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "";
 string mongodbConnection = Environment.GetEnvironmentVariable("MONGODB_CONNECTION") ?? "";
-bool useRedisMembership = !string.IsNullOrEmpty(redisConnection);
 bool useMongoDBMembership = !string.IsNullOrEmpty(mongodbConnection);
-bool useLocalhostClustering = !(useRedisMembership || useMongoDBMembership);
+bool useLocalhostClustering = !useMongoDBMembership;
 int gatewayPort = int.Parse(Environment.GetEnvironmentVariable("GATEWAY_PORT") ?? "30000");
 int siloPort = int.Parse(Environment.GetEnvironmentVariable("SILO_PORT") ?? "11111");
 bool useLocalhostAddress = bool.Parse(Environment.GetEnvironmentVariable("USE_LOCAL_HOST_ADDRESS") ?? "false");
 string dataFolder = Environment.GetEnvironmentVariable("DATA_FOLDER") ?? "../../../data";
 
-Console.WriteLine($"Redis Connection: {redisConnection}");
 Console.WriteLine($"MongoDB Connection: {mongodbConnection}");
 Console.WriteLine($"Using Localhost Clustering: {useLocalhostClustering}");
-Console.WriteLine($"Using Redis Membership: {useRedisMembership}");
 Console.WriteLine($"Using MongoDB Membership: {useMongoDBMembership}");
 Console.WriteLine($"Silo Port: {siloPort}");
 Console.WriteLine($"Gateway Port: {gatewayPort}");
@@ -49,16 +45,6 @@ var host = Host.CreateDefaultBuilder()
         if (useLocalhostClustering)
         {
             siloBuilder.UseLocalhostClustering();
-            siloBuilder.ConfigureEndpoints(advertisedIP: ipAddress, siloPort: siloPort, gatewayPort: gatewayPort, true);
-        }
-        else if (useRedisMembership)
-        {
-            siloBuilder.UseRedisClustering(options =>
-            {
-                options.ConfigurationOptions = StackExchange.Redis.ConfigurationOptions.Parse(redisConnection);
-                options.ConfigurationOptions.DefaultDatabase = 0;
-            });
-
             siloBuilder.ConfigureEndpoints(advertisedIP: ipAddress, siloPort: siloPort, gatewayPort: gatewayPort, true);
         }
         else if (useMongoDBMembership)
