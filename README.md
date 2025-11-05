@@ -1,4 +1,6 @@
-# Virtual Actor Logic Rolling Upgrade Sample
+# Orleans Virtual Actor Rolling Upgrade Sample
+
+Also a good staring point for Orleans
 
 ## Demo
 
