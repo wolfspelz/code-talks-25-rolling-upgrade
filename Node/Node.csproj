@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Logic\Logic.csproj" />
+    <ProjectReference Include="..\JsonFileStorage\JsonFileStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

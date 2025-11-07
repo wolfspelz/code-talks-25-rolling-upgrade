@@ -3,6 +3,9 @@ using System.Net.Sockets;
 using Microsoft.CodeAnalysis;
 using Orleans.Providers.MongoDB.Configuration;
 using Orleans.Configuration;
+using Orleans.Hosting;
+using My.Logic; // This ensures the grains assembly is loaded
+using My.StorageProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,29 +15,48 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Orleans Client
+// Configure Orleans
 string mongodbConnection = Environment.GetEnvironmentVariable("MONGODB_CONNECTION") ?? "";
+bool useMongoDBMembership = !string.IsNullOrEmpty(mongodbConnection);
+bool useLocalhostClustering = !useMongoDBMembership;
+string dataFolder = Environment.GetEnvironmentVariable("DATA_FOLDER") ?? "../tmp/data";
 
 Console.WriteLine($"MongoDB Connection: {mongodbConnection}");
+Console.WriteLine($"Using Localhost Clustering: {useLocalhostClustering}");
+Console.WriteLine($"Using MongoDB Membership: {useMongoDBMembership}");
+Console.WriteLine($"Data Folder: {dataFolder} = {Path.GetFullPath(dataFolder)}");
 
-builder.Host.UseOrleansClient(clientBuilder =>
+if (useLocalhostClustering)
 {
-    clientBuilder.UseMongoDBClient(mongodbConnection);
-    clientBuilder.UseMongoDBClustering(options =>
+    // Use integrated local silo for debugging
+    builder.Host.UseOrleans(siloBuilder =>
     {
-        options.DatabaseName = "orleans";
-        options.Strategy = MongoDBMembershipStrategy.SingleDocument;
+        siloBuilder.UseLocalhostClustering();
+        
+        siloBuilder.AddJsonFileStorage("JsonFileStorage", options =>
+        {
+            options.RootDirectory = dataFolder;
+            options.FileExtension = ".json";
+            options.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+        });
     });
-
-    clientBuilder.Configure<ClientMessagingOptions>(options =>
+}
+else
+{
+    // Use Orleans Client to connect to external cluster via MongoDB Membership
+    builder.Host.UseOrleansClient(clientBuilder =>
     {
-        options.ResponseTimeout = TimeSpan.FromSeconds(30);
+        clientBuilder.UseMongoDBClient(mongodbConnection);
+        clientBuilder.UseMongoDBClustering(options =>
+        {
+            options.DatabaseName = "orleans";
+            options.Strategy = MongoDBMembershipStrategy.SingleDocument;
+        });
     });
-});
+}
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
 // if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

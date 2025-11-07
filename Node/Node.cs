@@ -14,7 +14,7 @@ bool useLocalhostClustering = !useMongoDBMembership;
 int gatewayPort = int.Parse(Environment.GetEnvironmentVariable("GATEWAY_PORT") ?? "30000");
 int siloPort = int.Parse(Environment.GetEnvironmentVariable("SILO_PORT") ?? "11111");
 bool useLocalhostAddress = bool.Parse(Environment.GetEnvironmentVariable("USE_LOCAL_HOST_ADDRESS") ?? "false");
-string dataFolder = Environment.GetEnvironmentVariable("DATA_FOLDER") ?? "../../../data";
+string dataFolder = Environment.GetEnvironmentVariable("DATA_FOLDER") ?? "../../../../tmp/data";
 
 Console.WriteLine($"MongoDB Connection: {mongodbConnection}");
 Console.WriteLine($"Using Localhost Clustering: {useLocalhostClustering}");
@@ -51,9 +51,6 @@ var host = Host.CreateDefaultBuilder()
             Environment.Exit(1);
         }
 
-        siloBuilder.AddMemoryStreams("MyProvider");
-        siloBuilder.AddMemoryGrainStorage("PubSubStore");
-
         siloBuilder.AddJsonFileStorage("JsonFileStorage", options =>
         {
             options.RootDirectory = dataFolder;
@@ -61,12 +58,6 @@ var host = Host.CreateDefaultBuilder()
             // options.IndentJson = true;
             options.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
         });
-
-
-        siloBuilder.Configure<SiloMessagingOptions>(options =>
-            {
-                options.ResponseTimeout = TimeSpan.FromSeconds(3); // Reduced from 30s
-            });
 
         siloBuilder.ConfigureLogging(logging =>
         {
@@ -85,7 +76,7 @@ var host = Host.CreateDefaultBuilder()
                 return true;
             });
         });
-
+        
     })
 
     .Build();

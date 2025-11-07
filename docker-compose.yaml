@@ -1,17 +1,8 @@
-# volumes:
-#   mongodb_data:
-        
 services:
   mongodb:
     image: mongo:latest
     ports:
       - "27017:27017"
-    # environment:
-    #   - MONGO_INITDB_ROOT_USERNAME=orleans
-    #   - MONGO_INITDB_ROOT_PASSWORD=orleanspass
-    #   - MONGO_INITDB_DATABASE=orleans
-    # volumes:
-    #   - mongodb_data:/data/db
     networks:
       - my-network
     command: ["mongod", "--quiet", "--logpath", "/dev/null"]
@@ -53,7 +44,7 @@ services:
       - "30001:30001"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30001
@@ -71,7 +62,7 @@ services:
       - "30002:30002"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30002
@@ -89,7 +80,7 @@ services:
       - "30003:30003"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30003
@@ -107,7 +98,7 @@ services:
       - "30004:30004"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30004
@@ -125,7 +116,7 @@ services:
       - "30005:30005"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30005
@@ -144,7 +135,7 @@ services:
       - "30006:30006"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30006
@@ -162,7 +153,7 @@ services:
       - "30007:30007"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30007
@@ -180,7 +171,7 @@ services:
       - "30008:30008"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30008
@@ -198,7 +189,7 @@ services:
       - "30009:30009"
     volumes:
       - ./Node/app:/app
-      - ./Node/data:/data
+      - ./tmp/data:/data
     environment:
       - MONGODB_CONNECTION=mongodb://mongodb:27017/orleans
       - GATEWAY_PORT=30009

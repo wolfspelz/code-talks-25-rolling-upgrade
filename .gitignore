@@ -31,6 +31,7 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
-Node/data
+tmp
+
 Node/app
 Web/app
