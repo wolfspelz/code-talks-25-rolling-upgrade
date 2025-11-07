@@ -29,19 +29,6 @@ Console.WriteLine($"Data Folder: {dataFolder} = {Path.GetFullPath(dataFolder)}")
 var host = Host.CreateDefaultBuilder()
     .UseOrleans(siloBuilder =>
     {
-        // siloBuilder.Configure<SiloMessagingOptions>(options =>
-        // {
-        //     // Reduce shutdown timeout (default is 30s)
-        //     options.SystemResponseTimeout = TimeSpan.FromSeconds(2);
-        //     options.MaxRequestProcessingTime = TimeSpan.FromSeconds(2);
-        // })
-        // .Configure<ClusterMembershipOptions>(options =>
-        // {
-        //     // Faster death declaration
-        //     options.ProbeTimeout = TimeSpan.FromSeconds(1);
-        //     options.TableRefreshTimeout = TimeSpan.FromSeconds(1);
-        // });
-
         if (useLocalhostClustering)
         {
             siloBuilder.UseLocalhostClustering();
@@ -71,7 +58,7 @@ var host = Host.CreateDefaultBuilder()
         {
             options.RootDirectory = dataFolder;
             options.FileExtension = ".json";
-            options.IndentJson = true;
+            // options.IndentJson = true;
             options.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
         });
 
@@ -101,23 +88,6 @@ var host = Host.CreateDefaultBuilder()
 
     })
 
-    .ConfigureServices(services =>
-    {
-        // Register the hosted service
-        // services.AddHostedService<TrackingViewLifecycle>();
-
-        // Optional: Add any other services you need
-        // services.AddSingleton<IYourService, YourServiceImplementation>();
-    })
     .Build();
 
-// // Handle shutdown signals
-// var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
-// lifetime.ApplicationStopping.Register(() =>
-// {
-//     Console.WriteLine("Fast shutdown initiated...");
-//     // Skip graceful deactivation for demo
-//     Environment.Exit(0);
-// });
-    
 host.Run();
