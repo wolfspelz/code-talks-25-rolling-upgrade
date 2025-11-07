@@ -1,6 +1,6 @@
 # Orleans Virtual Actor Rolling Upgrade Sample
 
-Also a good staring point for Orleans
+Also a good starting point for Orleans
 
 ## Demo
 
