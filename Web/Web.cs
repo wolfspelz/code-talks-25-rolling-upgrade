@@ -26,13 +26,18 @@ Console.WriteLine($"Using Localhost Clustering: {useLocalhostClustering}");
 Console.WriteLine($"Using MongoDB Membership: {useMongoDBMembership}");
 Console.WriteLine($"Data Folder: {dataFolder} = {Path.GetFullPath(dataFolder)}");
 
+// This looks more "complicated" than it is, 
+// but it's just choosing between two simple configurations
+// 1. useLocalhostClustering: use an integrated local silo for debugging
+// 2. useMongoDBMembership: use an Orleans Client to connect to an external cluster
+
 if (useLocalhostClustering)
 {
-    // Use integrated local silo for debugging
+    // Integrated local silo for debugging
     builder.Host.UseOrleans(siloBuilder =>
     {
         siloBuilder.UseLocalhostClustering();
-        
+
         siloBuilder.AddJsonFileStorage("JsonFileStorage", options =>
         {
             options.RootDirectory = dataFolder;
@@ -43,7 +48,7 @@ if (useLocalhostClustering)
 }
 else
 {
-    // Use Orleans Client to connect to external cluster via MongoDB Membership
+    // Orleans Client to connect to external cluster via MongoDB Membership
     builder.Host.UseOrleansClient(clientBuilder =>
     {
         clientBuilder.UseMongoDBClient(mongodbConnection);
