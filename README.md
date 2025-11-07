@@ -1,10 +1,5 @@
 # Orleans Virtual Actor Rolling Upgrade Sample
 
-Also a good starting point for Orleans
-
-## Demo
-
-Terminal 1:
 Also a good staring point for Orleans.
 
 ## As a Starting Point
@@ -29,7 +24,7 @@ A JSON file based storage is included for demonstration purposes. For production
 
 ## The Demo
 
-Terminal 1 (starts: 9 nodes + mongodb membership table + a web frontend):
+Terminal 1 (starts: 9 nodes + mongodb for membership table + a web frontend on http-localhost-5000):
 ```
 make run
 ```
